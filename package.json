@@ -1,0 +1,19 @@
+{
+  "name": "navigator",
+  "version": "1.0.0",
+  "description": "Navigateur internet basé sur Electron et Chromium",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev"
+  },
+  "keywords": [
+    "browser",
+    "electron",
+    "chromium"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^42.3.3"
+  }
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; media-src *; connect-src *; font-src * data:;">
+  <title>Navigator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="browser-ui">
+    <div id="tab-bar">
+      <div id="tab-container"></div>
+      <button id="new-tab-btn" title="Nouvel onglet (Ctrl+T)">+</button>
+    </div>
+
+    <div id="nav-bar">
+      <div id="nav-buttons">
+        <button id="back-btn" title="Précédent" disabled>&#9664;</button>
+        <button id="forward-btn" title="Suivant" disabled>&#9654;</button>
+        <button id="reload-btn" title="Recharger">&#8635;</button>
+      </div>
+      <div id="url-bar-container">
+        <input type="text" id="url-bar" placeholder="Entrez une URL ou effectuez une recherche..." autofocus>
+      </div>
+    </div>
+
+    <div id="content-area">
+      <div id="welcome-page" class="active">
+        <div class="welcome-content">
+          <h1>Navigator</h1>
+          <p>Navigateur internet basé sur Chromium & Electron</p>
+          <div class="search-box">
+            <input type="text" id="welcome-search" placeholder="Rechercher ou entrer une URL..." autofocus>
+          </div>
+          <div class="quick-links">
+            <div class="quick-link" data-url="https://www.google.com">
+              <span class="ql-icon">G</span>
+              <span class="ql-label">Google</span>
+            </div>
+            <div class="quick-link" data-url="https://www.wikipedia.org">
+              <span class="ql-icon">W</span>
+              <span class="ql-label">Wikipedia</span>
+            </div>
+            <div class="quick-link" data-url="https://github.com">
+              <span class="ql-icon">&#60;&#62;</span>
+              <span class="ql-label">GitHub</span>
+            </div>
+            <div class="quick-link" data-url="https://www.youtube.com">
+              <span class="ql-icon">&#9654;</span>
+              <span class="ql-label">YouTube</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
