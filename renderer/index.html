@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; media-src *; connect-src *; font-src * data:;">
-  <title>Navigator</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; img-src * data: blob:; media-src *; connect-src *; font-src * data:;">
+  <title>Wouaff</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,13 +23,64 @@
       <div id="url-bar-container">
         <input type="text" id="url-bar" placeholder="Entrez une URL ou effectuez une recherche..." autofocus>
       </div>
+      <button id="bookmark-btn" title="Ajouter aux favoris">&#9734;</button>
+      <div id="settings-container">
+        <button id="settings-btn" title="Paramètres">&#8942;</button>
+        <div id="settings-menu" class="dropdown-menu hidden">
+          <div class="settings-item" data-action="bookmark-manager">
+            <span class="settings-icon">&#128279;</span>
+            <span>Gérer les favoris</span>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-item" data-action="zoom-in">
+            <span class="settings-icon">&#10133;</span>
+            <span>Zoom avant</span>
+            <span class="settings-shortcut">Ctrl+=</span>
+          </div>
+          <div class="settings-item" data-action="zoom-out">
+            <span class="settings-icon">&#10134;</span>
+            <span>Zoom arrière</span>
+            <span class="settings-shortcut">Ctrl+-</span>
+          </div>
+          <div class="settings-item" data-action="zoom-reset">
+            <span class="settings-icon">&#8634;</span>
+            <span>Zoom normal</span>
+            <span class="settings-shortcut">Ctrl+0</span>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-item" data-action="devtools">
+            <span class="settings-icon">&#9881;</span>
+            <span>Outils de développement</span>
+            <span class="settings-shortcut">F12</span>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-item" data-action="settings">
+            <span class="settings-icon">&#9881;</span>
+            <span>Paramètres</span>
+          </div>
+          <div class="settings-item" data-action="about">
+            <span class="settings-icon">&#8505;</span>
+            <span>À propos de Wouaff</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="bookmarks-bar">
+      <div id="bookmarks-container"></div>
+      <div id="bookmarks-overflow" class="hidden">
+        <button id="bookmarks-overflow-btn" title="Plus de favoris">&gt;&gt;</button>
+        <div id="bookmarks-overflow-menu" class="dropdown-menu hidden"></div>
+      </div>
     </div>
 
     <div id="content-area">
       <div id="welcome-page" class="active">
+        <div class="welcome-bg"></div>
         <div class="welcome-content">
-          <h1>Navigator</h1>
-          <p>Navigateur internet basé sur Chromium & Electron</p>
+          <img src="../assets/logo/logo.png" alt="Wouaff" class="welcome-logo">
+          <h1>Wouaff</h1>
+          <p>Navigateur internet basé sur Chromium &amp; Electron</p>
           <div class="search-box">
             <input type="text" id="welcome-search" placeholder="Rechercher ou entrer une URL..." autofocus>
           </div>
@@ -53,6 +104,162 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id="settings-overlay" class="hidden">
+    <div class="settings-modal">
+      <div class="settings-sidebar">
+        <div class="settings-sidebar-header">
+          <img src="../assets/logo/logo.png" alt="W" class="settings-sidebar-logo">
+          <span>Paramètres</span>
+        </div>
+        <div class="settings-nav">
+          <div class="settings-nav-item active" data-section="general">
+            <span class="sn-icon">&#9881;</span>
+            <span>Général</span>
+          </div>
+          <div class="settings-nav-item" data-section="search">
+            <span class="sn-icon">&#128269;</span>
+            <span>Moteur de recherche</span>
+          </div>
+          <div class="settings-nav-item" data-section="appearance">
+            <span class="sn-icon">&#127912;</span>
+            <span>Apparence</span>
+          </div>
+          <div class="settings-nav-item" data-section="privacy">
+            <span class="sn-icon">&#128274;</span>
+            <span>Confidentialité</span>
+          </div>
+        </div>
+      </div>
+      <div class="settings-content">
+        <button id="settings-close">&times;</button>
+
+        <div class="settings-section active" id="section-general">
+          <h2>Général</h2>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Page d'accueil</div>
+              <div class="setting-desc">Page affichée au démarrage</div>
+            </div>
+            <input type="text" id="setting-homepage" class="setting-input" value="https://www.qwant.com/">
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Nouvel onglet</div>
+              <div class="setting-desc">Page affichée quand vous ouvrez un nouvel onglet</div>
+            </div>
+            <select id="setting-newtab" class="setting-select">
+              <option value="homepage">Page d'accueil</option>
+              <option value="blank">Page blanche</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Barre de favoris</div>
+              <div class="setting-desc">Afficher ou masquer la barre de favoris</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-show-bookmarks" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-section" id="section-search">
+          <h2>Moteur de recherche</h2>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Moteur par défaut</div>
+              <div class="setting-desc">Utilisé pour les recherches depuis la barre d'URL</div>
+            </div>
+            <select id="setting-search-engine" class="setting-select">
+              <option value="qwant">Qwant</option>
+              <option value="google">Google</option>
+              <option value="bing">Bing</option>
+              <option value="duckduckgo">DuckDuckGo</option>
+              <option value="custom">Personnalisé</option>
+            </select>
+          </div>
+          <div class="setting-row hidden" id="custom-search-row">
+            <div class="setting-info">
+              <div class="setting-label">URL personnalisée</div>
+              <div class="setting-desc">Utilisez {query} comme emplacement de la recherche</div>
+            </div>
+            <input type="text" id="setting-custom-search" class="setting-input" placeholder="https://example.com/search?q={query}">
+          </div>
+        </div>
+
+        <div class="settings-section" id="section-appearance">
+          <h2>Apparence</h2>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Thème</div>
+              <div class="setting-desc">Thème sombre uniquement pour l'instant</div>
+            </div>
+            <select class="setting-select" disabled>
+              <option>Sombre</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-section" id="section-privacy">
+          <h2>Confidentialité</h2>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Protection anti-tracking</div>
+              <div class="setting-desc">Limite le suivi inter-sites (via Chromium)</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-dnt" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Cookies tiers</div>
+              <div class="setting-desc">Bloquer les cookies tiers</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-block-cookies" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-footer">
+          <button id="settings-save" class="settings-btn primary">Enregistrer</button>
+          <button id="settings-cancel" class="settings-btn">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="about-overlay" class="hidden">
+    <div class="about-modal">
+      <button id="about-close">&times;</button>
+      <img src="../assets/logo/logo.png" alt="Wouaff" class="about-logo-img">
+      <h1>Wouaff</h1>
+      <p class="about-version">Version 1.0.0</p>
+      <p class="about-desc">
+        Navigateur internet open source basé sur Electron &amp; Chromium.<br>
+        Conçu pour être simple, rapide et respectueux de votre vie privée.
+      </p>
+      <div class="about-info">
+        <div class="about-row">
+          <span class="about-label">Moteur de recherche</span>
+          <span class="about-value">Qwant</span>
+        </div>
+        <div class="about-row">
+          <span class="about-label">Rendu</span>
+          <span class="about-value">Chromium (via Electron)</span>
+        </div>
+      </div>
+      <div class="about-badges">
+        <span>Electron</span><span>Chromium</span><span>JavaScript</span><span>Qwant</span>
+      </div>
+      <p class="about-footer">Wouaff &mdash; 2026</p>
     </div>
   </div>
 

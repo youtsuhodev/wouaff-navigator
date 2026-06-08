@@ -1,7 +1,7 @@
 {
-  "name": "navigator",
+  "name": "wouaff",
   "version": "1.0.0",
-  "description": "Navigateur internet basé sur Electron et Chromium",
+  "description": "Wouaff - Navigateur internet basé sur Electron et Chromium",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

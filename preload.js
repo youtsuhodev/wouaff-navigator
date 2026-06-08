@@ -7,6 +7,13 @@ contextBridge.exposeInMainWorld('navigatorAPI', {
   getTabs: () => ipcRenderer.invoke('get-tabs'),
   saveDialog: (defaultName) => ipcRenderer.invoke('save-dialog', defaultName),
 
+  getBookmarks: () => ipcRenderer.invoke('get-bookmarks'),
+  addBookmark: (title, url) => ipcRenderer.invoke('add-bookmark', { title, url }),
+  removeBookmark: (url) => ipcRenderer.invoke('remove-bookmark', url),
+
+  getSettings: () => ipcRenderer.invoke('get-settings'),
+  saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
+
   onNewTab: (callback) => ipcRenderer.on('new-tab', callback),
   onCloseTab: (callback) => ipcRenderer.on('close-tab', callback),
   onReloadTab: (callback) => ipcRenderer.on('reload-tab', callback),

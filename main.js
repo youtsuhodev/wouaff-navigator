@@ -5,6 +5,21 @@ const fs = require('fs');
 let mainWindow;
 const tabs = new Map();
 let tabIdCounter = 0;
+let bookmarksPath, settingsPath;
+
+function getBookmarksPath() {
+  if (!bookmarksPath) {
+    bookmarksPath = path.join(app.getPath('userData'), 'bookmarks.json');
+  }
+  return bookmarksPath;
+}
+
+function getSettingsPath() {
+  if (!settingsPath) {
+    settingsPath = path.join(app.getPath('userData'), 'settings.json');
+  }
+  return settingsPath;
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -12,8 +27,8 @@ function createWindow() {
     height: 800,
     minWidth: 600,
     minHeight: 400,
-    title: 'Navigator',
-    icon: path.join(__dirname, 'assets', 'icon.png'),
+    title: 'Wouaff',
+    icon: path.join(__dirname, 'assets', 'logo', 'icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -153,6 +168,64 @@ ipcMain.handle('save-dialog', async (_, defaultName) => {
     defaultPath: defaultName,
   });
   return result.canceled ? null : result.filePath;
+});
+
+function loadBookmarks() {
+  try {
+    const p = getBookmarksPath();
+    if (fs.existsSync(p)) {
+      return JSON.parse(fs.readFileSync(p, 'utf-8'));
+    }
+  } catch {}
+  return [];
+}
+
+function saveBookmarks(bookmarks) {
+  try {
+    fs.writeFileSync(getBookmarksPath(), JSON.stringify(bookmarks, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Failed to save bookmarks:', e);
+  }
+}
+
+ipcMain.handle('get-bookmarks', () => loadBookmarks());
+ipcMain.handle('add-bookmark', (_, { title, url }) => {
+  const bookmarks = loadBookmarks();
+  if (!bookmarks.find(b => b.url === url)) {
+    bookmarks.push({ title, url });
+    saveBookmarks(bookmarks);
+  }
+  return bookmarks;
+});
+ipcMain.handle('remove-bookmark', (_, url) => {
+  let bookmarks = loadBookmarks();
+  bookmarks = bookmarks.filter(b => b.url !== url);
+  saveBookmarks(bookmarks);
+  return bookmarks;
+});
+
+function loadSettings() {
+  try {
+    const p = getSettingsPath();
+    if (fs.existsSync(p)) {
+      return JSON.parse(fs.readFileSync(p, 'utf-8'));
+    }
+  } catch {}
+  return { searchEngine: 'qwant', homepage: 'https://www.qwant.com/', newTabPage: 'homepage', showBookmarksBar: true };
+}
+
+function saveSettings(settings) {
+  try {
+    fs.writeFileSync(getSettingsPath(), JSON.stringify(settings, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Failed to save settings:', e);
+  }
+}
+
+ipcMain.handle('get-settings', () => loadSettings());
+ipcMain.handle('save-settings', (_, settings) => {
+  saveSettings(settings);
+  return settings;
 });
 
 app.whenReady().then(() => {
