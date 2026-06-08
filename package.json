@@ -1,6 +1,6 @@
 {
   "name": "wouaff",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Wouaff - Navigateur internet basé sur Electron et Chromium",
   "author": "Wouaff",
   "main": "main.js",
@@ -23,7 +23,9 @@
       "assets/**/*"
     ],
     "win": {
-      "target": ["nsis"],
+      "target": [
+        "nsis"
+      ],
       "icon": "assets/logo/icon.ico"
     },
     "nsis": {
