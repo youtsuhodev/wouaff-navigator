@@ -14,6 +14,12 @@ contextBridge.exposeInMainWorld('navigatorAPI', {
   getSettings: () => ipcRenderer.invoke('get-settings'),
   saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
 
+  minimize: () => ipcRenderer.invoke('window-minimize'),
+  maximize: () => ipcRenderer.invoke('window-maximize'),
+  close: () => ipcRenderer.invoke('window-close'),
+  isMaximized: () => ipcRenderer.invoke('window-is-maximized'),
+  onWindowStateChanged: (callback) => ipcRenderer.on('window-state-changed', (_, maximized) => callback(maximized)),
+
   onNewTab: (callback) => ipcRenderer.on('new-tab', callback),
   onCloseTab: (callback) => ipcRenderer.on('close-tab', callback),
   onReloadTab: (callback) => ipcRenderer.on('reload-tab', callback),
@@ -24,4 +30,6 @@ contextBridge.exposeInMainWorld('navigatorAPI', {
   onZoomIn: (callback) => ipcRenderer.on('zoom-in', callback),
   onZoomOut: (callback) => ipcRenderer.on('zoom-out', callback),
   onZoomReset: (callback) => ipcRenderer.on('zoom-reset', callback),
+
+  rpcUpdate: (data) => ipcRenderer.send('rpc-update', data),
 });

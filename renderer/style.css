@@ -24,8 +24,8 @@ body {
   display: flex;
   align-items: center;
   background: var(--bg-deep);
-  height: 36px;
-  padding: 0 4px;
+  height: 38px;
+  padding: 0 4px 0 0;
   -webkit-app-region: drag;
 }
 
@@ -35,7 +35,7 @@ body {
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: thin;
-  -webkit-app-region: no-drag;
+  padding-left: 6px;
 }
 
 #tab-container::-webkit-scrollbar {
@@ -105,6 +105,7 @@ body {
 #new-tab-btn {
   width: 28px;
   height: 28px;
+  margin-right: 4px;
   border: none;
   background: transparent;
   color: var(--text-muted);
@@ -115,11 +116,48 @@ body {
   align-items: center;
   justify-content: center;
   -webkit-app-region: no-drag;
+  flex-shrink: 0;
 }
 
 #new-tab-btn:hover {
   background: var(--bg-card);
   color: var(--text-primary);
+}
+
+#window-controls {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  -webkit-app-region: no-drag;
+  flex-shrink: 0;
+}
+
+.win-btn {
+  width: 44px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s, color 0.1s;
+}
+
+.win-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.win-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.win-close:hover {
+  background: var(--danger);
+  color: #fff;
 }
 
 #nav-bar {
@@ -377,15 +415,11 @@ body {
   inset: 0;
   background: rgba(0,0,0,0.7);
   z-index: 9999;
-  display: none;
+  display: flex;
   justify-content: center;
   align-items: center;
   animation: fadeIn 0.15s ease-out;
   backdrop-filter: blur(4px);
-}
-
-#settings-overlay.active {
-  display: flex;
 }
 
 .settings-modal {

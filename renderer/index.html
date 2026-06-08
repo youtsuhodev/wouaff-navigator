@@ -6,60 +6,73 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; img-src * data: blob:; media-src *; connect-src *; font-src * data:;">
   <title>Wouaff</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../assets/css/bootstrap-icons.css">
 </head>
 <body>
   <div id="browser-ui">
     <div id="tab-bar">
       <div id="tab-container"></div>
       <button id="new-tab-btn" title="Nouvel onglet (Ctrl+T)">+</button>
+      <div id="window-controls">
+        <button class="win-btn" id="win-minimize" title="Minimiser">
+          <svg viewBox="0 0 12 12"><rect x="1" y="5.5" width="10" height="1" fill="currentColor"/></svg>
+        </button>
+        <button class="win-btn" id="win-maximize" title="Agrandir">
+          <svg viewBox="0 0 12 12" id="max-icon"><rect x="1.5" y="1.5" width="9" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+          <svg viewBox="0 0 12 12" id="restore-icon" style="display:none"><rect x="2.5" y="0.5" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="0.5" y="2.5" width="8" height="8" rx="1" fill="var(--bg-deep)" stroke="currentColor" stroke-width="1.2"/></svg>
+        </button>
+        <button class="win-btn win-close" id="win-close" title="Fermer">
+          <svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        </button>
+      </div>
     </div>
 
     <div id="nav-bar">
       <div id="nav-buttons">
-        <button id="back-btn" title="Précédent" disabled>&#9664;</button>
-        <button id="forward-btn" title="Suivant" disabled>&#9654;</button>
-        <button id="reload-btn" title="Recharger">&#8635;</button>
+        <button id="back-btn" title="Précédent" disabled><i class="bi-caret-left-fill"></i></button>
+        <button id="forward-btn" title="Suivant" disabled><i class="bi-caret-right-fill"></i></button>
+        <button id="reload-btn" title="Recharger"><i class="bi-arrow-clockwise"></i></button>
       </div>
       <div id="url-bar-container">
         <input type="text" id="url-bar" placeholder="Entrez une URL ou effectuez une recherche..." autofocus>
       </div>
-      <button id="bookmark-btn" title="Ajouter aux favoris">&#9734;</button>
+      <button id="bookmark-btn" title="Ajouter aux favoris"><i class="bi-star"></i></button>
       <div id="settings-container">
-        <button id="settings-btn" title="Paramètres">&#8942;</button>
+        <button id="settings-btn" title="Paramètres"><i class="bi-three-dots-vertical"></i></button>
         <div id="settings-menu" class="dropdown-menu hidden">
           <div class="settings-item" data-action="bookmark-manager">
-            <span class="settings-icon">&#128279;</span>
+            <span class="settings-icon"><i class="bi-link-45deg"></i></span>
             <span>Gérer les favoris</span>
           </div>
           <div class="settings-divider"></div>
           <div class="settings-item" data-action="zoom-in">
-            <span class="settings-icon">&#10133;</span>
+            <span class="settings-icon"><i class="bi-plus-circle"></i></span>
             <span>Zoom avant</span>
             <span class="settings-shortcut">Ctrl+=</span>
           </div>
           <div class="settings-item" data-action="zoom-out">
-            <span class="settings-icon">&#10134;</span>
+            <span class="settings-icon"><i class="bi-dash-circle"></i></span>
             <span>Zoom arrière</span>
             <span class="settings-shortcut">Ctrl+-</span>
           </div>
           <div class="settings-item" data-action="zoom-reset">
-            <span class="settings-icon">&#8634;</span>
+            <span class="settings-icon"><i class="bi-arrow-counterclockwise"></i></span>
             <span>Zoom normal</span>
             <span class="settings-shortcut">Ctrl+0</span>
           </div>
           <div class="settings-divider"></div>
           <div class="settings-item" data-action="devtools">
-            <span class="settings-icon">&#9881;</span>
+            <span class="settings-icon"><i class="bi-gear"></i></span>
             <span>Outils de développement</span>
             <span class="settings-shortcut">F12</span>
           </div>
           <div class="settings-divider"></div>
           <div class="settings-item" data-action="settings">
-            <span class="settings-icon">&#9881;</span>
+            <span class="settings-icon"><i class="bi-gear"></i></span>
             <span>Paramètres</span>
           </div>
           <div class="settings-item" data-action="about">
-            <span class="settings-icon">&#8505;</span>
+            <span class="settings-icon"><i class="bi-info-circle"></i></span>
             <span>À propos de Wouaff</span>
           </div>
         </div>
@@ -69,7 +82,7 @@
     <div id="bookmarks-bar">
       <div id="bookmarks-container"></div>
       <div id="bookmarks-overflow" class="hidden">
-        <button id="bookmarks-overflow-btn" title="Plus de favoris">&gt;&gt;</button>
+        <button id="bookmarks-overflow-btn" title="Plus de favoris"><i class="bi-chevron-double-right"></i></button>
         <div id="bookmarks-overflow-menu" class="dropdown-menu hidden"></div>
       </div>
     </div>
@@ -94,11 +107,11 @@
               <span class="ql-label">Wikipedia</span>
             </div>
             <div class="quick-link" data-url="https://github.com">
-              <span class="ql-icon">&#60;&#62;</span>
+              <span class="ql-icon"><i class="bi-code-slash"></i></span>
               <span class="ql-label">GitHub</span>
             </div>
             <div class="quick-link" data-url="https://www.youtube.com">
-              <span class="ql-icon">&#9654;</span>
+              <span class="ql-icon"><i class="bi-play-fill"></i></span>
               <span class="ql-label">YouTube</span>
             </div>
           </div>
@@ -116,25 +129,25 @@
         </div>
         <div class="settings-nav">
           <div class="settings-nav-item active" data-section="general">
-            <span class="sn-icon">&#9881;</span>
+            <span class="sn-icon"><i class="bi-gear"></i></span>
             <span>Général</span>
           </div>
           <div class="settings-nav-item" data-section="search">
-            <span class="sn-icon">&#128269;</span>
+            <span class="sn-icon"><i class="bi-search"></i></span>
             <span>Moteur de recherche</span>
           </div>
           <div class="settings-nav-item" data-section="appearance">
-            <span class="sn-icon">&#127912;</span>
+            <span class="sn-icon"><i class="bi-palette"></i></span>
             <span>Apparence</span>
           </div>
           <div class="settings-nav-item" data-section="privacy">
-            <span class="sn-icon">&#128274;</span>
+            <span class="sn-icon"><i class="bi-shield-lock"></i></span>
             <span>Confidentialité</span>
           </div>
         </div>
       </div>
       <div class="settings-content">
-        <button id="settings-close">&times;</button>
+        <button id="settings-close"><i class="bi-x-lg"></i></button>
 
         <div class="settings-section active" id="section-general">
           <h2>Général</h2>
@@ -143,7 +156,7 @@
               <div class="setting-label">Page d'accueil</div>
               <div class="setting-desc">Page affichée au démarrage</div>
             </div>
-            <input type="text" id="setting-homepage" class="setting-input" value="https://www.qwant.com/">
+            <input type="text" id="setting-homepage" class="setting-input" placeholder="Laissez vide pour la page d'accueil">
           </div>
           <div class="setting-row">
             <div class="setting-info">
@@ -175,6 +188,7 @@
               <div class="setting-desc">Utilisé pour les recherches depuis la barre d'URL</div>
             </div>
             <select id="setting-search-engine" class="setting-select">
+              <option value="wouaff">Wouaff (Qwant)</option>
               <option value="qwant">Qwant</option>
               <option value="google">Google</option>
               <option value="bing">Bing</option>
@@ -196,10 +210,11 @@
           <div class="setting-row">
             <div class="setting-info">
               <div class="setting-label">Thème</div>
-              <div class="setting-desc">Thème sombre uniquement pour l'instant</div>
+              <div class="setting-desc">Choisissez entre le thème sombre et clair</div>
             </div>
-            <select class="setting-select" disabled>
-              <option>Sombre</option>
+            <select id="setting-theme" class="setting-select">
+              <option value="dark">Sombre</option>
+              <option value="light">Clair</option>
             </select>
           </div>
         </div>
@@ -238,7 +253,7 @@
 
   <div id="about-overlay" class="hidden">
     <div class="about-modal">
-      <button id="about-close">&times;</button>
+      <button id="about-close"><i class="bi-x-lg"></i></button>
       <img src="../assets/logo/logo.png" alt="Wouaff" class="about-logo-img">
       <h1>Wouaff</h1>
       <p class="about-version">Version 1.0.0</p>

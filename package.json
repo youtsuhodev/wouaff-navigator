@@ -2,10 +2,29 @@
   "name": "wouaff",
   "version": "1.0.0",
   "description": "Wouaff - Navigateur internet basé sur Electron et Chromium",
+  "author": "Wouaff",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dev": "electron . --dev"
+    "dev": "electron . --dev",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.wouaff.browser",
+    "productName": "Wouaff",
+    "directories": {
+      "output": "build-out"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "assets/logo/icon.ico"
+    }
   },
   "keywords": [
     "browser",
@@ -13,7 +32,12 @@
     "chromium"
   ],
   "license": "MIT",
+  "devDependencies": {
+    "electron": "^42.3.3",
+    "electron-builder": "^25.1.8"
+  },
   "dependencies": {
-    "electron": "^42.3.3"
+    "@xhayper/discord-rpc": "^1.3.4",
+    "bootstrap-icons": "^1.13.1"
   }
 }

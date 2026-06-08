@@ -7,6 +7,7 @@ let zoomLevels = {};
 const DEFAULT_ZOOM = 1.0;
 const readyWebviews = new Set();
 const SEARCH_ENGINES = {
+  wouaff: 'https://www.qwant.com/?q=',
   qwant: 'https://www.qwant.com/?q=',
   google: 'https://www.google.com/search?q=',
   bing: 'https://www.bing.com/search?q=',
@@ -31,7 +32,7 @@ const settingsBtn = document.getElementById('settings-btn');
 const settingsMenu = document.getElementById('settings-menu');
 
 let bookmarks = [];
-let searchUrl = 'https://www.qwant.com/?q=';
+let searchUrl = SEARCH_ENGINES.wouaff;
 
 function normalizeUrl(input) {
   input = input.trim();
@@ -41,7 +42,7 @@ function normalizeUrl(input) {
     return `https://${input}`;
   }
   const query = encodeURIComponent(input);
-  const base = searchUrl || 'https://www.qwant.com/?q=';
+  const base = searchUrl || SEARCH_ENGINES.wouaff;
   return base + query;
 }
 
@@ -97,6 +98,7 @@ function createWebviewContainer(tabId) {
       updateBookmarkStar();
     }
     updateNavButtons(tabId);
+    if (tabId === activeTabId) updateRPC();
   });
 
   webview.addEventListener('did-navigate-in-page', (e) => {
@@ -105,6 +107,7 @@ function createWebviewContainer(tabId) {
       updateBookmarkStar();
     }
     updateNavButtons(tabId);
+    if (e.isMainFrame && tabId === activeTabId) updateRPC();
   });
 
   webview.addEventListener('new-window', (e) => {
@@ -162,7 +165,7 @@ async function createTab(url) {
 
   if (url) {
     const webview = getWebview(tabId);
-    if (webview) webview.src = normalizeUrl(url);
+    if (webview) webview.loadURL(normalizeUrl(url)).catch(() => {});
   }
 
   return tabId;
@@ -190,11 +193,13 @@ function activateTab(tabId) {
 
   const container = document.querySelector(`.webview-container[data-tab-id="${tabId}"]`);
   if (container) {
-    container.classList.add('active');
     const webview = container.querySelector('webview');
-    if (webview && webview.src !== 'about:blank') {
+    if (webview && readyWebviews.has(tabId) && webview.getURL() !== 'about:blank') {
+      container.classList.add('active');
+      welcomePage.classList.remove('active');
       urlBar.value = webview.getURL();
     } else {
+      welcomePage.classList.add('active');
       urlBar.value = '';
     }
     updateNavButtons(tabId);
@@ -203,13 +208,14 @@ function activateTab(tabId) {
     welcomePage.classList.add('active');
     urlBar.value = '';
     bookmarkBtn.classList.remove('bookmarked');
-    bookmarkBtn.textContent = '\u2606';
+    bookmarkBtn.innerHTML = '<i class="bi-star"></i>';
   }
 
   const tab = getTab(tabId);
   if (tab) {
     document.title = tab.title !== 'Nouvel onglet' ? `${tab.title} - Wouaff` : 'Wouaff';
   }
+  updateRPC();
 }
 
 async function closeTab(tabId) {
@@ -257,7 +263,17 @@ function updateTabUI(tabId, { title, loading } = {}) {
     if (tab) {
       document.title = tab.title !== 'Nouvel onglet' ? `${tab.title} - Wouaff` : 'Wouaff';
     }
-    reloadBtn.textContent = loading ? '\u2715' : '\u21BB';
+    reloadBtn.innerHTML = loading ? '<i class="bi-x"></i>' : '<i class="bi-arrow-clockwise"></i>';
+    updateRPC();
+  }
+}
+
+function updateRPC() {
+  const tab = getTab(activeTabId);
+  if (tab) {
+    api.rpcUpdate({ title: tab.title !== 'Nouvel onglet' ? tab.title : '', url: tab.url || '' });
+  } else {
+    api.rpcUpdate({ title: '', url: '' });
   }
 }
 
@@ -282,13 +298,13 @@ function navigateTo(url) {
     return;
   }
 
-  const activeContainer = document.querySelector(`.webview-container[data-tab-id="${tabId}"].active`);
-  if (activeContainer) {
-    const webview = activeContainer.querySelector('webview');
-    if (webview) {
-      webview.src = targetUrl;
-      urlBar.value = targetUrl;
-    }
+  const webview = getWebview(tabId);
+  if (webview) {
+    const container = document.querySelector(`.webview-container[data-tab-id="${tabId}"]`);
+    if (container) container.classList.add('active');
+    welcomePage.classList.remove('active');
+    webview.loadURL(targetUrl).catch(() => {});
+    urlBar.value = targetUrl;
   } else {
     createTab(targetUrl);
   }
@@ -299,11 +315,11 @@ function updateBookmarkStar() {
   if (tab && tab.url && tab.url !== 'about:blank') {
     const found = bookmarks.find(b => b.url === tab.url);
     bookmarkBtn.classList.toggle('bookmarked', !!found);
-    bookmarkBtn.textContent = found ? '\u2605' : '\u2606';
+    bookmarkBtn.innerHTML = found ? '<i class="bi-star-fill"></i>' : '<i class="bi-star"></i>';
     bookmarkBtn.title = found ? 'Retirer des favoris' : 'Ajouter aux favoris';
   } else {
     bookmarkBtn.classList.remove('bookmarked');
-    bookmarkBtn.textContent = '\u2606';
+    bookmarkBtn.innerHTML = '<i class="bi-star"></i>';
     bookmarkBtn.title = 'Ajouter aux favoris';
   }
 }
@@ -487,13 +503,19 @@ document.getElementById('about-overlay').addEventListener('click', (e) => {
 });
 
 let currentSettings = {};
+let currentTheme = 'dark';
 
 async function openSettings() {
-  currentSettings = await api.getSettings();
-  document.getElementById('setting-homepage').value = currentSettings.homepage || 'https://www.qwant.com/';
+  try {
+    currentSettings = await api.getSettings();
+  } catch (e) {
+    currentSettings = {};
+  }
+  document.getElementById('setting-homepage').value = currentSettings.homepage || '';
   document.getElementById('setting-newtab').value = currentSettings.newTabPage || 'homepage';
   document.getElementById('setting-show-bookmarks').checked = currentSettings.showBookmarksBar !== false;
-  document.getElementById('setting-search-engine').value = currentSettings.searchEngine || 'qwant';
+  document.getElementById('setting-search-engine').value = currentSettings.searchEngine || 'wouaff';
+  document.getElementById('setting-theme').value = currentSettings.theme || 'dark';
 
   const csRow = document.getElementById('custom-search-row');
   if (currentSettings.searchEngine === 'custom') {
@@ -503,11 +525,11 @@ async function openSettings() {
     csRow.classList.add('hidden');
   }
 
-  document.getElementById('settings-overlay').classList.add('active');
+  document.getElementById('settings-overlay').classList.remove('hidden');
 }
 
 function closeSettings() {
-  document.getElementById('settings-overlay').classList.remove('active');
+  document.getElementById('settings-overlay').classList.add('hidden');
 }
 
 function saveSettings() {
@@ -516,8 +538,9 @@ function saveSettings() {
   const showBookmarksBar = document.getElementById('setting-show-bookmarks').checked;
   const searchEngine = document.getElementById('setting-search-engine').value;
   const customSearchUrl = document.getElementById('setting-custom-search').value.trim();
+  const theme = document.getElementById('setting-theme').value;
 
-  const settings = { homepage, newTabPage, showBookmarksBar, searchEngine };
+  const settings = { homepage, newTabPage, showBookmarksBar, searchEngine, theme };
   if (searchEngine === 'custom' && customSearchUrl) {
     settings.customSearchUrl = customSearchUrl;
   }
@@ -539,6 +562,9 @@ function applySettings() {
   } else {
     searchUrl = SEARCH_ENGINES[currentSettings.searchEngine] || SEARCH_ENGINES.qwant;
   }
+
+  currentTheme = currentSettings.theme || 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
 }
 
 function updateSearchUrl() {
@@ -567,6 +593,24 @@ document.getElementById('settings-overlay').addEventListener('click', (e) => {
 });
 document.getElementById('settings-save').addEventListener('click', saveSettings);
 document.getElementById('settings-cancel').addEventListener('click', closeSettings);
+
+document.getElementById('win-minimize').addEventListener('click', () => api.minimize());
+document.getElementById('win-maximize').addEventListener('click', toggleMaximize);
+document.getElementById('win-close').addEventListener('click', () => api.close());
+
+api.onWindowStateChanged(maximized => {
+  document.getElementById('max-icon').style.display = maximized ? 'none' : '';
+  document.getElementById('restore-icon').style.display = maximized ? '' : 'none';
+});
+
+function toggleMaximize() {
+  api.maximize();
+}
+
+api.isMaximized().then(maximized => {
+  document.getElementById('max-icon').style.display = maximized ? 'none' : '';
+  document.getElementById('restore-icon').style.display = maximized ? '' : 'none';
+});
 
 newTabBtn.addEventListener('click', () => createTab());
 
@@ -659,14 +703,19 @@ window.addEventListener('resize', () => {
 });
 
 api.getSettings().then(settings => {
-  searchUrl = SEARCH_ENGINES[settings.searchEngine] || 'https://www.qwant.com/?q=';
-  if (settings.searchEngine === 'custom' && settings.customSearchUrl) {
+  if (settings.searchEngine === 'wouaff' || !SEARCH_ENGINES[settings.searchEngine]) {
+    searchUrl = SEARCH_ENGINES.wouaff;
+  } else if (settings.searchEngine === 'custom' && settings.customSearchUrl) {
     searchUrl = settings.customSearchUrl;
+  } else {
+    searchUrl = SEARCH_ENGINES[settings.searchEngine] || SEARCH_ENGINES.wouaff;
   }
-  createTab(settings.homepage || 'https://www.qwant.com/');
-
+  createTab(settings.homepage && settings.homepage.trim() ? settings.homepage.trim() : '');
   if (settings.showBookmarksBar === false) {
     document.getElementById('bookmarks-bar').style.display = 'none';
+  }
+  if (settings.theme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
   }
 });
 loadBookmarks();

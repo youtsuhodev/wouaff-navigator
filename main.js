@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const rpc = require('./rpc');
 
 let mainWindow;
 const tabs = new Map();
@@ -29,6 +30,7 @@ function createWindow() {
     minHeight: 400,
     title: 'Wouaff',
     icon: path.join(__dirname, 'assets', 'logo', 'icon.ico'),
+    frame: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -47,6 +49,9 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  mainWindow.on('maximize', () => mainWindow?.webContents.send('window-state-changed', true));
+  mainWindow.on('unmaximize', () => mainWindow?.webContents.send('window-state-changed', false));
 }
 
 function buildMenu() {
@@ -211,7 +216,7 @@ function loadSettings() {
       return JSON.parse(fs.readFileSync(p, 'utf-8'));
     }
   } catch {}
-  return { searchEngine: 'qwant', homepage: 'https://www.qwant.com/', newTabPage: 'homepage', showBookmarksBar: true };
+  return { searchEngine: 'wouaff', homepage: '', newTabPage: 'homepage', showBookmarksBar: true, theme: 'dark' };
 }
 
 function saveSettings(settings) {
@@ -228,9 +233,21 @@ ipcMain.handle('save-settings', (_, settings) => {
   return settings;
 });
 
-app.whenReady().then(() => {
+ipcMain.handle('window-minimize', () => mainWindow?.minimize());
+ipcMain.handle('window-maximize', () => {
+  if (mainWindow?.isMaximized()) {
+    mainWindow.unmaximize();
+  } else {
+    mainWindow.maximize();
+  }
+});
+ipcMain.handle('window-close', () => mainWindow?.close());
+ipcMain.handle('window-is-maximized', () => mainWindow?.isMaximized());
+
+app.whenReady().then(async () => {
   buildMenu();
   createWindow();
+  await rpc.start();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -238,5 +255,10 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
+  rpc.stop();
   if (process.platform !== 'darwin') app.quit();
+});
+
+ipcMain.on('rpc-update', (_, { title, url }) => {
+  rpc.updateActivity(title, url);
 });
