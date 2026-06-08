@@ -42,8 +42,8 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "TON_USERNAME",
-      "repo": "navigator",
+      "owner": "youtsuhodev",
+      "repo": "wouaff-navigator",
       "releaseType": "release"
     }
   },
@@ -52,7 +52,7 @@
     "electron",
     "chromium"
   ],
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
     "electron": "^42.3.3",
     "electron-builder": "^25.1.8"
