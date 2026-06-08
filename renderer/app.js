@@ -702,6 +702,75 @@ window.addEventListener('resize', () => {
   renderBookmarks();
 });
 
+/* ═══ AUTO-UPDATE ═══ */
+const updateBar = document.getElementById('update-bar');
+const updateMsg = document.getElementById('update-message');
+const updateBtn = document.getElementById('update-btn');
+const updateInstallBtn = document.getElementById('update-install-btn');
+const updateProgress = document.getElementById('update-progress');
+const updateProgressBar = document.getElementById('update-progress-bar');
+const updateDismiss = document.getElementById('update-dismiss');
+
+function showUpdateBar(msg) {
+  updateMsg.textContent = msg;
+  updateBar.classList.remove('hidden');
+}
+
+function hideUpdateBar() {
+  updateBar.classList.add('hidden');
+  updateBtn.classList.add('hidden');
+  updateInstallBtn.classList.add('hidden');
+  updateProgress.classList.add('hidden');
+}
+
+api.onUpdateChecking(() => {
+  updateMsg.textContent = 'Vérification des mises à jour...';
+  updateBar.classList.remove('hidden');
+  updateBtn.classList.add('hidden');
+  updateInstallBtn.classList.add('hidden');
+  updateProgress.classList.add('hidden');
+});
+
+api.onUpdateAvailable((info) => {
+  showUpdateBar(`Nouvelle version ${info.version} disponible`);
+  updateBtn.classList.remove('hidden');
+  updateBtn.textContent = 'Télécharger';
+  updateInstallBtn.classList.add('hidden');
+  updateProgress.classList.add('hidden');
+});
+
+api.onUpdateNotAvailable(() => {
+  hideUpdateBar();
+});
+
+api.onUpdateError((msg) => {
+  updateMsg.textContent = `Erreur de mise à jour : ${msg}`;
+  updateBtn.classList.add('hidden');
+  updateInstallBtn.classList.add('hidden');
+  updateProgress.classList.add('hidden');
+  setTimeout(hideUpdateBar, 6000);
+});
+
+api.onUpdateProgress((progress) => {
+  const pct = Math.round(progress.percent);
+  updateMsg.textContent = `Téléchargement de la mise à jour... ${pct}%`;
+  updateBtn.classList.add('hidden');
+  updateInstallBtn.classList.add('hidden');
+  updateProgress.classList.remove('hidden');
+  updateProgressBar.style.width = `${pct}%`;
+});
+
+api.onUpdateDownloaded(() => {
+  showUpdateBar('Mise à jour téléchargée — redémarrez pour installer');
+  updateBtn.classList.add('hidden');
+  updateInstallBtn.classList.remove('hidden');
+  updateProgress.classList.add('hidden');
+});
+
+updateBtn.addEventListener('click', () => api.downloadUpdate());
+updateInstallBtn.addEventListener('click', () => api.installUpdate());
+updateDismiss.addEventListener('click', hideUpdateBar);
+
 api.getSettings().then(settings => {
   if (settings.searchEngine === 'wouaff' || !SEARCH_ENGINES[settings.searchEngine]) {
     searchUrl = SEARCH_ENGINES.wouaff;

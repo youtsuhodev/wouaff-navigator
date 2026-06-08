@@ -32,4 +32,15 @@ contextBridge.exposeInMainWorld('navigatorAPI', {
   onZoomReset: (callback) => ipcRenderer.on('zoom-reset', callback),
 
   rpcUpdate: (data) => ipcRenderer.send('rpc-update', data),
+
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+  downloadUpdate: () => ipcRenderer.invoke('download-update'),
+  installUpdate: () => ipcRenderer.invoke('install-update'),
+
+  onUpdateChecking: (callback) => ipcRenderer.on('update-checking', callback),
+  onUpdateAvailable: (callback) => ipcRenderer.on('update-available', (_, info) => callback(info)),
+  onUpdateNotAvailable: (callback) => ipcRenderer.on('update-not-available', (_, info) => callback(info)),
+  onUpdateError: (callback) => ipcRenderer.on('update-error', (_, msg) => callback(msg)),
+  onUpdateProgress: (callback) => ipcRenderer.on('update-download-progress', (_, progress) => callback(progress)),
+  onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', (_, info) => callback(info)),
 });
