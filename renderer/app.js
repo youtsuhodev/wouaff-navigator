@@ -703,73 +703,71 @@ window.addEventListener('resize', () => {
 });
 
 /* ═══ AUTO-UPDATE ═══ */
-const updateBar = document.getElementById('update-bar');
-const updateMsg = document.getElementById('update-message');
+const updateOverlay = document.getElementById('update-overlay');
+const updateModalMsg = document.getElementById('update-modal-msg');
 const updateBtn = document.getElementById('update-btn');
-const updateInstallBtn = document.getElementById('update-install-btn');
-const updateProgress = document.getElementById('update-progress');
-const updateProgressBar = document.getElementById('update-progress-bar');
 const updateDismiss = document.getElementById('update-dismiss');
+const updateInstallBtn = document.getElementById('update-install-btn');
+const updateModalProgress = document.getElementById('update-modal-progress');
+const updateProgressBar = document.getElementById('update-progress-bar');
+const updateModalPct = document.getElementById('update-modal-pct');
+const updateModalInstallMsg = document.getElementById('update-modal-install-msg');
 
-function showUpdateBar(msg) {
-  updateMsg.textContent = msg;
-  updateBar.classList.remove('hidden');
+function showUpdateModal(msg) {
+  updateModalMsg.textContent = msg;
+  updateOverlay.classList.remove('hidden');
 }
 
-function hideUpdateBar() {
-  updateBar.classList.add('hidden');
-  updateBtn.classList.add('hidden');
-  updateInstallBtn.classList.add('hidden');
-  updateProgress.classList.add('hidden');
+function hideUpdateModal() {
+  updateOverlay.classList.add('hidden');
 }
 
-api.onUpdateChecking(() => {
-  updateMsg.textContent = 'Vérification des mises à jour...';
-  updateBar.classList.remove('hidden');
-  updateBtn.classList.add('hidden');
+function resetUpdateUI() {
+  updateBtn.classList.remove('hidden');
+  updateDismiss.classList.remove('hidden');
   updateInstallBtn.classList.add('hidden');
-  updateProgress.classList.add('hidden');
-});
+  updateModalProgress.classList.add('hidden');
+  updateModalInstallMsg.classList.add('hidden');
+  updateProgressBar.style.width = '0%';
+}
 
 api.onUpdateAvailable((info) => {
-  showUpdateBar(`Nouvelle version ${info.version} disponible`);
-  updateBtn.classList.remove('hidden');
-  updateBtn.textContent = 'Télécharger';
-  updateInstallBtn.classList.add('hidden');
-  updateProgress.classList.add('hidden');
+  resetUpdateUI();
+  showUpdateModal(`Version ${info.version} disponible (${info.releaseNotes ? 'voir les notes de version' : 'actuelle : 1.0.0'}). Cliquez sur "Mettre à jour" pour télécharger.`);
 });
 
-api.onUpdateNotAvailable(() => {
-  hideUpdateBar();
-});
+api.onUpdateNotAvailable(() => {});
 
-api.onUpdateError((msg) => {
-  updateMsg.textContent = `Erreur de mise à jour : ${msg}`;
-  updateBtn.classList.add('hidden');
-  updateInstallBtn.classList.add('hidden');
-  updateProgress.classList.add('hidden');
-  setTimeout(hideUpdateBar, 6000);
-});
+api.onUpdateError(() => {});
 
 api.onUpdateProgress((progress) => {
   const pct = Math.round(progress.percent);
-  updateMsg.textContent = `Téléchargement de la mise à jour... ${pct}%`;
   updateBtn.classList.add('hidden');
-  updateInstallBtn.classList.add('hidden');
-  updateProgress.classList.remove('hidden');
+  updateDismiss.classList.add('hidden');
+  updateModalProgress.classList.remove('hidden');
+  updateModalPct.textContent = `${pct}%`;
   updateProgressBar.style.width = `${pct}%`;
+  updateModalMsg.textContent = `Téléchargement... ${pct}%`;
 });
 
 api.onUpdateDownloaded(() => {
-  showUpdateBar('Mise à jour téléchargée — redémarrez pour installer');
   updateBtn.classList.add('hidden');
+  updateDismiss.classList.add('hidden');
+  updateModalProgress.classList.add('hidden');
+  updateModalInstallMsg.classList.remove('hidden');
   updateInstallBtn.classList.remove('hidden');
-  updateProgress.classList.add('hidden');
+  updateModalMsg.textContent = 'Mise à jour prête à être installée.';
 });
 
-updateBtn.addEventListener('click', () => api.downloadUpdate());
+updateBtn.addEventListener('click', () => {
+  updateBtn.disabled = true;
+  updateBtn.textContent = 'Téléchargement...';
+  api.downloadUpdate();
+});
+
 updateInstallBtn.addEventListener('click', () => api.installUpdate());
-updateDismiss.addEventListener('click', hideUpdateBar);
+
+updateDismiss.addEventListener('click', hideUpdateModal);
 
 api.getSettings().then(settings => {
   if (settings.searchEngine === 'wouaff' || !SEARCH_ENGINES[settings.searchEngine]) {

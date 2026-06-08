@@ -87,16 +87,6 @@
       </div>
     </div>
 
-    <div id="update-bar" class="hidden">
-      <span id="update-message">Une mise à jour est disponible</span>
-      <button id="update-btn" class="hidden">Télécharger</button>
-      <button id="update-install-btn" class="hidden">Redémarrer</button>
-      <div id="update-progress" class="hidden">
-        <div id="update-progress-bar"></div>
-      </div>
-      <button id="update-dismiss"><i class="bi-x"></i></button>
-    </div>
-
     <div id="content-area">
       <div id="welcome-page" class="active">
         <div class="welcome-bg"></div>
@@ -261,12 +251,34 @@
     </div>
   </div>
 
+  <div id="update-overlay" class="hidden">
+    <div class="update-modal">
+      <div class="update-modal-icon">
+        <i class="bi-arrow-repeat"></i>
+      </div>
+      <h2>Mise à jour disponible</h2>
+      <p id="update-modal-msg">Une nouvelle version de Wouaff est disponible.</p>
+      <div id="update-modal-progress" class="hidden">
+        <div class="update-modal-pct" id="update-modal-pct">0%</div>
+        <div class="update-progress-track">
+          <div id="update-progress-bar"></div>
+        </div>
+      </div>
+      <div class="update-modal-actions">
+        <button id="update-btn" class="update-btn primary">Mettre à jour</button>
+        <button id="update-dismiss" class="update-btn">Ignorer</button>
+      </div>
+      <p id="update-modal-install-msg" class="hidden">Mise à jour téléchargée — redémarrez Wouaff pour installer.</p>
+      <button id="update-install-btn" class="hidden">Redémarrer maintenant</button>
+    </div>
+  </div>
+
   <div id="about-overlay" class="hidden">
     <div class="about-modal">
       <button id="about-close"><i class="bi-x-lg"></i></button>
       <img src="../assets/logo/logo.png" alt="Wouaff" class="about-logo-img">
       <h1>Wouaff</h1>
-      <p class="about-version">Version 1.0.0</p>
+      <p class="about-version" id="about-version-text">Version 1.0.0</p>
       <p class="about-desc">
         Navigateur internet open source basé sur Electron &amp; Chromium.<br>
         Conçu pour être simple, rapide et respectueux de votre vie privée.

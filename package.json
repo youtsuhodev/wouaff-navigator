@@ -18,12 +18,25 @@
     "files": [
       "main.js",
       "preload.js",
+      "rpc.js",
       "renderer/**/*",
       "assets/**/*"
     ],
     "win": {
-      "target": ["nsis", "portable"],
+      "target": ["nsis"],
       "icon": "assets/logo/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Wouaff",
+      "installerIcon": "assets/logo/icon.ico",
+      "uninstallerIcon": "assets/logo/icon.ico",
+      "license": null,
+      "language": "1040",
+      "unicode": true
     },
     "publish": {
       "provider": "github",

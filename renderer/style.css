@@ -961,81 +961,158 @@ webview {
   border: none;
 }
 
-#update-bar {
+#update-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.15s ease-out;
+  backdrop-filter: blur(4px);
+}
+
+#update-overlay.hidden {
+  display: none;
+}
+
+.update-modal {
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 36px 32px 28px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  animation: scaleIn 0.2s ease-out;
+}
+
+.update-modal-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--brand-glow);
   display: flex;
   align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 26px;
+  color: var(--brand);
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.update-modal h2 {
+  font-size: 20px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+#update-modal-msg {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.update-modal-actions {
+  display: flex;
   gap: 10px;
-  padding: 6px 12px;
-  background: var(--brand-dark);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-  animation: slideDown 0.2s ease-out;
+  justify-content: center;
 }
 
-#update-bar.hidden {
-  display: none;
-}
-
-#update-message {
-  flex: 1;
-}
-
-#update-bar button {
-  padding: 4px 14px;
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 4px;
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-  font-size: 11px;
+.update-btn {
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
   font-weight: 700;
-  cursor: pointer;
   font-family: inherit;
-  transition: background 0.15s;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
 }
 
-#update-bar button:hover {
-  background: rgba(255,255,255,0.25);
+.update-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
-#update-bar button.hidden {
+.update-btn.primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.update-btn.primary:hover {
+  background: var(--brand-dark);
+  border-color: var(--brand-dark);
+}
+
+#update-modal-progress {
+  margin: 16px 0;
+}
+
+#update-modal-progress.hidden {
   display: none;
 }
 
-#update-dismiss {
-  background: transparent !important;
-  border: none !important;
-  font-size: 16px;
-  padding: 0 4px !important;
-  opacity: 0.7;
+.update-modal-pct {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--brand);
+  margin-bottom: 8px;
 }
 
-#update-dismiss:hover {
-  opacity: 1;
-}
-
-#update-progress {
-  flex: 1;
+.update-progress-track {
   height: 6px;
-  background: rgba(0,0,0,0.2);
+  background: var(--bg-input);
   border-radius: 3px;
   overflow: hidden;
-  max-width: 200px;
-}
-
-#update-progress.hidden {
-  display: none;
 }
 
 #update-progress-bar {
   height: 100%;
   width: 0%;
-  background: #fff;
+  background: var(--brand);
   border-radius: 3px;
   transition: width 0.3s;
 }
 
-@keyframes slideDown {
-  from { transform: translateY(-100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+#update-modal-install-msg {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 16px 0 12px;
+}
+
+#update-modal-install-msg.hidden {
+  display: none;
+}
+
+#update-install-btn {
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: var(--brand);
+  color: #fff;
+  transition: background 0.15s;
+}
+
+#update-install-btn.hidden {
+  display: none;
+}
+
+#update-install-btn:hover {
+  background: var(--brand-dark);
 }
